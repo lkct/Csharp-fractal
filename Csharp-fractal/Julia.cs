@@ -16,8 +16,10 @@ namespace Csharp_fractal
     // 绘制Julia集
     static class Julia
     {
-        public static int MaxIter { get; set; } = 10; // 迭代次数，可外部修改
-        public static double Power { get; set; } = 2.0; // 迭代方程幂次，可外部修改
+        // public static bool IsTanRev { get; set; } // 是否X、Y轴颠倒，可外部修改
+        public static int MaxIter { get; set; } // 迭代次数，可外部修改
+        public static double Power { get; set; } // 迭代方程幂次，可外部修改
+        public static int[] PowerNumberList = new int[] { 3, 3, 3, 3, 4, 4, 5, 5, 6, 7, 8 };
 
         // 传入复平面绘制区域，复数参数c，颜色映射函数，返回绘制好的位图
         public static Bitmap GetJulia(ImgRegion region, Complex c, ColorMap cmap)
@@ -32,20 +34,36 @@ namespace Csharp_fractal
             {
                 for (j = 0, y = region.Down; j < height; j++, y += region.Step)
                 {
+                    //Complex z0 = new Complex(x, y); // 第MaxIter次的迭代值
+                    //Complex z1 = Complex.Pow(z0, Power) + c; // 第MaxIter+1次的迭代值
+                    //Complex z2 = Complex.Pow(z1, Power) + c; // 第MaxIter+2次的迭代值
+                    //for (int iters = 0; iters < MaxIter; iters++)
+                    //{
+                    //    z0 = z1;
+                    //    z1 = z2;
+                    //    z2 = Complex.Pow(z1, Power) + c;
+                    //}
+
+                    // 牛顿法迭代，求z^n + c = 0的根，n是Power
                     Complex z0 = new Complex(x, y); // 第MaxIter次的迭代值
-                    Complex z1 = Complex.Pow(z0, Power) + c; // 第MaxIter+1次的迭代值
-                    Complex z2 = Complex.Pow(z1, Power) + c; // 第MaxIter+2次的迭代值
+                    Complex z1 = F(z0, c); // 第MaxIter+1次的迭代值
+                    Complex z2 = F(z1, c); // 第MaxIter+2次的迭代值
                     for (int iters = 0; iters < MaxIter; iters++)
                     {
                         z0 = z1;
                         z1 = z2;
-                        z2 = Complex.Pow(z1, Power) + c;
+                        z2 = F(z1, c);
                     }
                     img.SetPixel(i, j, cmap(z0, z1, z2)); // 映射为颜色，放入图像
                 }
             }
 
             return img;
+        }
+
+        private static Complex F(Complex z,Complex c)
+        {
+            return z - (Complex.Pow(z, Power) + c) / (Power * Complex.Pow(z, Power - 1));
         }
     }
 }

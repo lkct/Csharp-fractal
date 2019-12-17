@@ -61,6 +61,38 @@ namespace Csharp_fractal
         private void DrawJulia()
         {
             // TODO: 必要的处理，如随机数
+
+            ColorMaps.m_ColorK1 = 0.216;
+            ColorMaps.m_ColorK2 = 0.6;
+            ColorMaps.m_ColorK3 = 0.6;
+            if (rnd.NextDouble()<0.5)
+                ColorMaps.m_ColorK1 *= -1;
+            if (rnd.NextDouble() < 0.5)
+                ColorMaps.m_ColorK2 *= -1;
+            if (rnd.NextDouble() < 0.5)
+                ColorMaps.m_ColorK3 *= -1;
+
+            int rand = rnd.Next(ColorMaps.RAND_MAX);
+            Julia.Power = Julia.PowerNumberList[rand % 11];
+
+            double r = 1.0 / (double)(1 << (int)(Julia.Power - 3));
+            r = Math.Pow(r, 0.095); //r大概在0.8到1之间
+            ColorMaps.m_ColorK1 *= r;
+            ColorMaps.m_ColorK2 *= r;
+            ColorMaps.m_ColorK3 *= r;
+
+            ColorMaps.ColorMoverInit(rand, 50 * r, 90 * r); //初始化颜色
+
+            if (rand > ColorMaps.RAND_MAX / 4)
+            {
+                if (Julia.Power == 3)
+                    Julia.MaxIter = 1 + (rand % 6);
+                else
+                    Julia.MaxIter = 1 + (rand % 4);
+            }
+            else
+                Julia.MaxIter = 1 + (rand % 3);
+
             ColorMap cmap = ColorMaps.GetCmap(/* TODO: 传入必要的参数，包括固定参数 */);
 
             Complex mouseC = new Complex(mouseX * region.Step + region.Left, region.Up - mouseY * region.Step); // 鼠标在复平面中坐标
