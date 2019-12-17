@@ -48,17 +48,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorMaps.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="ScreenSaver.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="ScreenSaver.Designer.cs">
+      <DependentUpon>ScreenSaver.cs</DependentUpon>
     </Compile>
     <Compile Include="Julia.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="ScreenSaver.resx">
+      <DependentUpon>ScreenSaver.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
