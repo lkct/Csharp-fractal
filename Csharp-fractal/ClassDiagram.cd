@@ -1,42 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Csharp_fractal.Form1">
-    <Position X="2.25" Y="1.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAABACAAAACAAAAAAAAAAAAAABAAAA=</HashCode>
-      <FileName>Form1.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Csharp_fractal.Julia">
-    <Position X="5.5" Y="1.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAIAAAAAAAAAAAAAQA=</HashCode>
-      <FileName>Julia.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Csharp_fractal.ColorMaps">
-    <Position X="7.75" Y="2.25" Width="1.5" />
+    <Position X="4.25" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ColorMaps.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Csharp_fractal.Julia">
+    <Position X="4.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAIAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Julia.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Csharp_fractal.ScreenSaver">
+    <Position X="0.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIEAAAAACAAAAAABACAAFACACAAAACAABAAAAAAACA=</HashCode>
+      <FileName>ScreenSaver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Struct Name="Csharp_fractal.ImgRegion">
-    <Position X="4.75" Y="4" Width="1.5" />
+    <Position X="6.5" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAKACAAAAAAAI=</HashCode>
       <FileName>Julia.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Delegate Name="Csharp_fractal.ColorMap">
-    <Position X="7.5" Y="5" Width="1.5" />
+    <Position X="4.25" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAQAAAA=</HashCode>
       <FileName>ColorMaps.cs</FileName>
     </TypeIdentifier>
   </Delegate>
   <Delegate Name="Csharp_fractal.Double2IntColor">
-    <Position X="9" Y="3.75" Width="1.5" />
+    <Position X="6" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAQAAAA=</HashCode>
       <FileName>ColorMaps.cs</FileName>
