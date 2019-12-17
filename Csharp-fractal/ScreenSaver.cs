@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Csharp_fractal
@@ -17,60 +11,79 @@ namespace Csharp_fractal
         {
             InitializeComponent();
 
+            // 设定显示区域大小
             Rectangle rect = Screen.GetWorkingArea(this);
-            this.Size = new Size(rect.Width, rect.Height);
             pictureBox.Location = new Point(0, 0);
             pictureBox.Size = new Size(rect.Width, rect.Height);
 
+            // 变化参数初始化
             rnd = new Random();
-            c = 2 * new Complex(rnd.NextDouble() - 0.5, rnd.NextDouble() - 0.5);
+            c = RandComplex();
             mouseX = 0;
             mouseY = 0;
-        }
 
-        private Random rnd;
-        private Complex c;
-        private int mouseX;
-        private int mouseY;
-
-        private void DrawJulia()
-        {
-            int width = pictureBox.Width;
-            int height = pictureBox.Height;
-            double step = 0.002; // TODO:
-            ImgRegion region = new ImgRegion // TODO:
+            // 固定参数初始化
+            double step = 0.002;
+            region = new ImgRegion
             {
                 Step = step,
-                Left = -width * step / 2,
-                Right = width * step / 2,
-                Down = -height * step / 2,
-                Up = height * step / 2,
+                Left = -rect.Width * step / 2,
+                Right = rect.Width * step / 2,
+                Down = -rect.Height * step / 2,
+                Up = rect.Height * step / 2,
             };
-            double[] bg_rgb = new double[3] { 0.5, 1.5, 1.5 }; // TODO:
-            double[] fg_rgb = new double[3] { 0.7, 0.8, 0.9 }; // TODO:
-            Double2IntColor d2i = (v, coef) => (int)(Math.Pow(v, coef) * 255); // TODO:
-            ColorMap cmap = ColorMaps.GetCmap(bg_rgb, fg_rgb, d2i);
-
-            double speedRate = 0.2; // TODO:
-            double randRate = 0.5; // TODO:
-            Complex mouseC = new Complex(mouseX * step + region.Left, region.Up - mouseY * step);
-            Complex randC = new Complex(rnd.NextDouble() - 0.5, rnd.NextDouble() - 0.5);
-            c += speedRate * (mouseC - c) + randRate * randC;
-            pictureBox.Image = Julia.GetJulia(region, c, cmap);
+            speedRate = 0.2;
+            randRate = 0.2;
+            // TODO: 新加入参数的初始化
         }
 
-        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        // 可变参数
+        private Random rnd; // 随机数生成器
+        private Complex c; // Julia参数
+        private int mouseX; // 当前鼠标位置屏幕坐标X
+        private int mouseY; // 当前鼠标位置屏幕坐标Y
+
+        // 固定参数
+        private readonly ImgRegion region; // 图像绘制区域
+        private readonly double speedRate; // c的移动速度与和鼠标位置差的比例
+        private readonly double randRate; // 移动方向随机干扰的比例
+        // TODO: 其它固定参数，全部设定为private readonly，在GetCmap前使用或在GetCmap中传入\
+
+        // 随机生成模为[0,1)的复数
+        private Complex RandComplex()
+        {
+            double modulus = rnd.NextDouble(); // 模，[0,1)
+            double argument = rnd.NextDouble() * 2 * Math.PI; // 幅角，[0,2π)
+            return new Complex(modulus * Math.Cos(argument), modulus * Math.Sin(argument)); // 转化为直角坐标
+        }
+
+        // 绘制Julia集放入显示
+        private void DrawJulia()
+        {
+            // TODO: 必要的处理，如随机数
+            ColorMap cmap = ColorMaps.GetCmap(/* TODO: 传入必要的参数，包括固定参数 */);
+
+            Complex mouseC = new Complex(mouseX * region.Step + region.Left, region.Up - mouseY * region.Step); // 鼠标在复平面中坐标
+            Complex randC = RandComplex(); // 随机扰动
+            c += speedRate * (mouseC - c) + randRate * randC; // 更新c
+            pictureBox.Image = Julia.GetJulia(region, c, cmap); // 重新绘图
+        }
+
+        // 鼠标移动时更新鼠标位置
+        private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             mouseX = e.X;
             mouseY = e.Y;
         }
 
-        private void tmrDraw_Tick(object sender, EventArgs e)
+        // 每一定时间重新绘图
+        private void TmrDraw_Tick(object sender, EventArgs e)
         {
             GC.Collect();
             DrawJulia();
         }
 
+        // 按下任意键退出
         private void ScreenSaver_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             Application.Exit();

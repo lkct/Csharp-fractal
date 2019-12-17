@@ -1,38 +1,31 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Numerics;
 
 namespace Csharp_fractal
 {
-    public delegate Color ColorMap(double norm, int iter);
-    public delegate int Double2IntColor(double v, double coef);
+    // 颜色映射函数的委托，将3个复数映射到一个颜色
+    public delegate Color ColorMap(Complex z0, Complex z1, Complex z2);
+    // TODO: 在ScreenSaver中使用的其它必要的类型，设定为public
 
+    // 颜色映射
     static class ColorMaps
     {
-        public static ColorMap GetCmap(double[] bg_rgb, double[] fg_rgb, Double2IntColor d2i)
+        // TODO: GetCmap中需要用到的定义（属性，方法等），设定为private static
+        // TODO: 简写属性初始化方式  private static int MaxIter { get; set; } = 10;
+        static ColorMaps()
         {
-            return (norm, iter) =>
-            {
-                if (norm < Julia.R)
-                {
-                    return Color.Black;
-                }
+            // TODO: 静态构造函数，初始化必要参数
+        }
 
-                double v = Math.Log(iter - Math.Log(Math.Log(norm, 2), 2) + 2, 2) / 4;
-                int r, g, b;
-                if (v < 1.0)
-                {
-                    double conv = Math.Max(0, v); // 收敛率
-                    r = d2i(conv, bg_rgb[0]);
-                    g = d2i(conv, bg_rgb[1]);
-                    b = d2i(conv, bg_rgb[2]);
-                }
-                else
-                {
-                    double div = Math.Max(0, 2 - v);
-                    r = d2i(div, fg_rgb[0]); // 发散率
-                    g = d2i(div, fg_rgb[1]);
-                    b = d2i(div, fg_rgb[2]);
-                }
+        // 根据传入的颜色参数获取颜色映射函数
+        public static ColorMap GetCmap(/* TODO: 从DrawJulia中传入必要的参数 */)
+        {
+            return (z0, z1, z2) =>
+            {
+                // TODO: 颜色映射
+                int r = 0;
+                int g = 0;
+                int b = 0;
                 return Color.FromArgb(r, g, b);
             };
         }

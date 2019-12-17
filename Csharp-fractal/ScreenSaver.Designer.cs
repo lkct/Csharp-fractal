@@ -42,13 +42,13 @@
             this.pictureBox.Size = new System.Drawing.Size(782, 432);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
-            this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
+            this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
             // 
             // tmrDraw
             // 
             this.tmrDraw.Enabled = true;
             this.tmrDraw.Interval = 1000;
-            this.tmrDraw.Tick += new System.EventHandler(this.tmrDraw_Tick);
+            this.tmrDraw.Tick += new System.EventHandler(this.TmrDraw_Tick);
             // 
             // ScreenSaver
             // 
