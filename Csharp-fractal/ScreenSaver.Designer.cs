@@ -47,7 +47,6 @@
             // tmrDraw
             // 
             this.tmrDraw.Enabled = true;
-            this.tmrDraw.Interval = 1000;
             this.tmrDraw.Tick += new System.EventHandler(this.TmrDraw_Tick);
             // 
             // ScreenSaver

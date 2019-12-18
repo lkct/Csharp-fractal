@@ -33,8 +33,6 @@ namespace Csharp_fractal
                 Up = rect.Height * step / 2,
             };
             speedRate = 0.2;
-            randRate = 0.2;
-            // TODO: 新加入参数的初始化
         }
 
         // 可变参数
@@ -46,8 +44,6 @@ namespace Csharp_fractal
         // 固定参数
         private readonly ImgRegion region; // 图像绘制区域
         private readonly double speedRate; // c的移动速度与和鼠标位置差的比例
-        private readonly double randRate; // 移动方向随机干扰的比例
-        // TODO: 其它固定参数，全部设定为private readonly，在GetCmap前使用或在GetCmap中传入\
 
         // 随机生成模为[0,1)的复数
         private Complex RandComplex()
@@ -60,12 +56,10 @@ namespace Csharp_fractal
         // 绘制Julia集放入显示
         private void DrawJulia()
         {
-            // TODO: 必要的处理，如随机数
-
             ColorMaps.m_ColorK1 = 0.216;
             ColorMaps.m_ColorK2 = 0.6;
             ColorMaps.m_ColorK3 = 0.6;
-            if (rnd.NextDouble()<0.5)
+            if (rnd.NextDouble() < 0.5)
                 ColorMaps.m_ColorK1 *= -1;
             if (rnd.NextDouble() < 0.5)
                 ColorMaps.m_ColorK2 *= -1;
@@ -73,7 +67,7 @@ namespace Csharp_fractal
                 ColorMaps.m_ColorK3 *= -1;
 
             int rand = rnd.Next(ColorMaps.RAND_MAX);
-            Julia.Power = Julia.PowerNumberList[rand % 11];
+            Julia.Power = Julia.PowerNumberList[rand % Julia.PowerNumberList.Length];
 
             double r = 1.0 / (double)(1 << (int)(Julia.Power - 3));
             r = Math.Pow(r, 0.095); //r大概在0.8到1之间
@@ -93,11 +87,10 @@ namespace Csharp_fractal
             else
                 Julia.MaxIter = 1 + (rand % 3);
 
-            ColorMap cmap = ColorMaps.GetCmap(/* TODO: 传入必要的参数，包括固定参数 */);
+            ColorMap cmap = ColorMaps.GetCmap();
 
             Complex mouseC = new Complex(mouseX * region.Step + region.Left, region.Up - mouseY * region.Step); // 鼠标在复平面中坐标
-            Complex randC = RandComplex(); // 随机扰动
-            c += speedRate * (mouseC - c) + randRate * randC; // 更新c
+            c += speedRate * (mouseC - c); // 更新c
             pictureBox.Image = Julia.GetJulia(region, c, cmap); // 重新绘图
         }
 
@@ -111,8 +104,10 @@ namespace Csharp_fractal
         // 每一定时间重新绘图
         private void TmrDraw_Tick(object sender, EventArgs e)
         {
+            tmrDraw.Stop();
             GC.Collect();
             DrawJulia();
+            tmrDraw.Start(); // 只等待100ms就绘制下一帧，等待时间主要为缓冲区绘制时间
         }
 
         // 按下任意键退出
