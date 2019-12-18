@@ -12,54 +12,80 @@ namespace Csharp_fractal
     {
         public const int MaxColorRoundValue = 512;
         public const int RAND_MAX = 0x7fff;
+        // 三个有关变量的系数
         private const double dL1_coef = 0.6;
         private const double dL2_coef = 0.6;
         private const double dL3_coef = 2.0;
 
-        public static double m_kR { get; set; }  //颜色变化强度
+        // 颜色变化强度
+        public static double m_kR { get; set; }  
         public static double m_kG { get; set; }
         public static double m_kB { get; set; }
-        public static double m_R0 { get; set; }  //初始颜色
+        // 初始颜色
+        public static double m_R0 { get; set; }  
         public static double m_G0 { get; set; }
         public static double m_B0 { get; set; }
+        // 三个变量的比例
         public static double m_ColorK1 { get; set; }
         public static double m_ColorK2 { get; set; }
         public static double m_ColorK3 { get; set; }
 
-        private static int[] colorRound_table = new int[(MaxColorRoundValue + 1) * 2];
+        private static int[] ColorRound_table = new int[(MaxColorRoundValue + 1) * 2];
 
         static ColorMaps()
         {
             Creat_colorRound_table();
         }
+        
+        // 参数随机重置
+        public static void ResetArgs(Random rnd, int rand)
+        {
+            m_ColorK1 = 0.216;
+            m_ColorK2 = 0.6;
+            m_ColorK3 = 0.6;
+            if (rnd.NextDouble() < 0.5)
+                m_ColorK1 *= -1;
+            if (rnd.NextDouble() < 0.5)
+                m_ColorK2 *= -1;
+            if (rnd.NextDouble() < 0.5)
+                m_ColorK3 *= -1;
 
-        public static void ColorMoverInit(int rand, double kMin, double kMax)
-        //参数取值！第一个不到50 第二个 不到90  
+            double r = 1.0 / (double)(1 << (int)(Julia.Power - 3));
+            r = Math.Pow(r, 0.095); //r大概在0.8到1之间
+            m_ColorK1 *= r;
+            m_ColorK2 *= r;
+            m_ColorK3 *= r;
+
+            ColorMoverInit(rnd, 50 * r, 90 * r); //初始化颜色
+        }
+
+        public static void ColorMoverInit(Random rnd, double kMin, double kMax)
+        //参数取值：第一个不到50 第二个不到90  
         {
             //颜色变化强度！
-            m_kR = rand * (1.0 / RAND_MAX) * (kMax - kMin) + kMin; //40多到90之间的随机浮点数
-            m_kG = rand * (1.0 / RAND_MAX) * (kMax - kMin) + kMin;
-            m_kB = rand * (1.0 / RAND_MAX) * (kMax - kMin) + kMin;
+            m_kR = rnd.Next(RAND_MAX) * (1.0 / RAND_MAX) * (kMax - kMin) + kMin; //40多到90之间的随机浮点数
+            m_kG = rnd.Next(RAND_MAX) * (1.0 / RAND_MAX) * (kMax - kMin) + kMin;
+            m_kB = rnd.Next(RAND_MAX) * (1.0 / RAND_MAX) * (kMax - kMin) + kMin;
 
             //初始颜色
-            m_R0 = rand * (1.0 / RAND_MAX) * MaxColorRoundValue; //0到512之间的随机浮点数
-            m_G0 = rand * (1.0 / RAND_MAX) * MaxColorRoundValue;
-            m_B0 = rand * (1.0 / RAND_MAX) * MaxColorRoundValue;
+            m_R0 = rnd.Next(RAND_MAX) * (1.0 / RAND_MAX) * MaxColorRoundValue; //0到512之间的随机浮点数
+            m_G0 = rnd.Next(RAND_MAX) * (1.0 / RAND_MAX) * MaxColorRoundValue;
+            m_B0 = rnd.Next(RAND_MAX) * (1.0 / RAND_MAX) * MaxColorRoundValue;
 
         }
 
         private static void Creat_colorRound_table()
         {
-            for (int i = 0; i < (MaxColorRoundValue + 1) * 2; i++)//首尾相接！为了柔和！太强大了！哈哈，明白了
-                colorRound_table[i] = round_color(i - (MaxColorRoundValue + 1));//取值是 -513到+510！！太强大了！
-        }//i是0到1023
+            for (int i = 0; i < ColorRound_table.Length; i++) //首尾相接，为了柔和
+                ColorRound_table[i] = Round_color(i);
+                //ColorRound_table[i] = Round_color(i - (MaxColorRoundValue + 1)); //取值是-513到+512
+        }
 
-        private static int round_color(int x)
+        private static int Round_color(int x)
         {
-            if (x < 0) x = -x;//取值变成  513到0，再到512。首尾相接
-            while (x > MaxColorRoundValue) x -= MaxColorRoundValue;//最后x范围是 1 512 到0 再到512
-            const double PI = 3.1415926535897932384626433832795;
-            double rd = (Math.Sin(x * (2.0 * PI / MaxColorRoundValue)) + 1.1) / 2.1;//色环！正好2pi转了一圈！
+            //if (x < 0) x = -x;//取值变成  513到0，再到512。首尾相接
+            //while (x > MaxColorRoundValue) x -= MaxColorRoundValue;//最后x范围是 1 512到0 再到512
+            double rd = (Math.Sin(x * (2.0 * Math.PI / MaxColorRoundValue)) + 1.1) / 2.1;//色环，正好2pi转了一圈
             //rd取值从 -0.1到1到0.1到1到-0.1
             int ri = (int)(rd * 255 + 0.5);
             //long ri=abs(x-csMaxColorRoundValue/2);
@@ -68,10 +94,11 @@ namespace Csharp_fractal
             else return ri;
         }
 
+
         private static int GetColor(double Color0, double k, double Gene)
         {
             uint colorIndex = (uint)(Color0 + k * Gene) % (uint)MaxColorRoundValue;
-            return colorRound_table[colorIndex];
+            return ColorRound_table[colorIndex];
         }
 
         // 根据传入的颜色参数获取颜色映射函数
@@ -86,7 +113,7 @@ namespace Csharp_fractal
                 double dL3 = Math.Log(Math.Abs(diff2.Real) + Math.Abs(diff2.Imaginary)) * dL3_coef;
 
 
-                double kR = dL1 * m_ColorK1 + dL2 * m_ColorK2 - dL3 * m_ColorK3;//这个配比很奇怪！不懂为啥这样
+                double kR = dL1 * m_ColorK1 + dL2 * m_ColorK2 - dL3 * m_ColorK3;
                 double kG = dL1 * m_ColorK1 - dL2 * m_ColorK2 + dL3 * m_ColorK3;
                 double kB = -dL1 * m_ColorK1 + dL2 * m_ColorK2 + dL3 * m_ColorK3;
 

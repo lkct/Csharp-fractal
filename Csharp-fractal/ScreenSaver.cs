@@ -18,7 +18,7 @@ namespace Csharp_fractal
 
             // 变化参数初始化
             rnd = new Random();
-            c = RandComplex();
+            c = RandComplex(1);
             mouseX = 0;
             mouseY = 0;
 
@@ -33,6 +33,7 @@ namespace Csharp_fractal
                 Up = rect.Height * step / 2,
             };
             speedRate = 0.2;
+            IsFirstRun = true;
         }
 
         // 可变参数
@@ -40,15 +41,16 @@ namespace Csharp_fractal
         private Complex c; // Julia参数
         private int mouseX; // 当前鼠标位置屏幕坐标X
         private int mouseY; // 当前鼠标位置屏幕坐标Y
+        private bool IsFirstRun; // 是否第一次绘图，因为第一次绘图效果不太好，所以用这个把它略过
 
         // 固定参数
         private readonly ImgRegion region; // 图像绘制区域
         private readonly double speedRate; // c的移动速度与和鼠标位置差的比例
 
         // 随机生成模为[0,1)的复数
-        private Complex RandComplex()
+        private Complex RandComplex(double mo)
         {
-            double modulus = rnd.NextDouble(); // 模，[0,1)
+            double modulus = mo * rnd.NextDouble(); // 模，[0,mo)
             double argument = rnd.NextDouble() * 2 * Math.PI; // 幅角，[0,2π)
             return new Complex(modulus * Math.Cos(argument), modulus * Math.Sin(argument)); // 转化为直角坐标
         }
@@ -56,42 +58,20 @@ namespace Csharp_fractal
         // 绘制Julia集放入显示
         private void DrawJulia()
         {
-            ColorMaps.m_ColorK1 = 0.216;
-            ColorMaps.m_ColorK2 = 0.6;
-            ColorMaps.m_ColorK3 = 0.6;
-            if (rnd.NextDouble() < 0.5)
-                ColorMaps.m_ColorK1 *= -1;
-            if (rnd.NextDouble() < 0.5)
-                ColorMaps.m_ColorK2 *= -1;
-            if (rnd.NextDouble() < 0.5)
-                ColorMaps.m_ColorK3 *= -1;
-
             int rand = rnd.Next(ColorMaps.RAND_MAX);
-            Julia.Power = Julia.PowerNumberList[rand % Julia.PowerNumberList.Length];
 
-            double r = 1.0 / (double)(1 << (int)(Julia.Power - 3));
-            r = Math.Pow(r, 0.095); //r大概在0.8到1之间
-            ColorMaps.m_ColorK1 *= r;
-            ColorMaps.m_ColorK2 *= r;
-            ColorMaps.m_ColorK3 *= r;
-
-            ColorMaps.ColorMoverInit(rand, 50 * r, 90 * r); //初始化颜色
-
-            if (rand > ColorMaps.RAND_MAX / 4)
-            {
-                if (Julia.Power == 3)
-                    Julia.MaxIter = 1 + (rand % 6);
-                else
-                    Julia.MaxIter = 1 + (rand % 4);
-            }
-            else
-                Julia.MaxIter = 1 + (rand % 3);
+            ColorMaps.ResetArgs(rnd, rand);
+            Julia.ResetArgs(rand);
 
             ColorMap cmap = ColorMaps.GetCmap();
 
             Complex mouseC = new Complex(mouseX * region.Step + region.Left, region.Up - mouseY * region.Step); // 鼠标在复平面中坐标
+            //Console.WriteLine(c);
             c += speedRate * (mouseC - c); // 更新c
-            pictureBox.Image = Julia.GetJulia(region, c, cmap); // 重新绘图
+            if (IsFirstRun)
+                IsFirstRun = false;
+            else
+                pictureBox.Image = Julia.GetJulia(region, c, cmap); // 重新绘图
         }
 
         // 鼠标移动时更新鼠标位置

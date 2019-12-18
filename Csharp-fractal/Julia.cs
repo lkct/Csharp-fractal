@@ -21,6 +21,21 @@ namespace Csharp_fractal
         public static int Power { get; set; } // 迭代方程幂次，可外部修改
         public static int[] PowerNumberList = new int[] { 3, 4, 5 };
 
+        // 参数随机重置
+        public static void ResetArgs(int rand)
+        {
+            Power = PowerNumberList[rand % PowerNumberList.Length];
+            if (rand > ColorMaps.RAND_MAX / 4) // 3/4的概率
+            {
+                if (Power == 3)
+                    MaxIter = 1 + (rand % 6);
+                else
+                    MaxIter = 1 + (rand % 4);
+            }
+            else
+                MaxIter = 1 + (rand % 3);
+        }
+
         // 传入复平面绘制区域，复数参数c，颜色映射函数，返回绘制好的位图
         public static Bitmap GetJulia(ImgRegion region, Complex c, ColorMap cmap)
         {
@@ -42,7 +57,7 @@ namespace Csharp_fractal
                     {
                         z0 = z1;
                         z1 = z2;
-                        z2 = F(z1, c);
+                        z2 = F(z2, c);
                     }
                     img.SetPixel(i, j, cmap(z0, z1, z2)); // 映射为颜色，放入图像
                 }
@@ -51,6 +66,7 @@ namespace Csharp_fractal
             return img;
         }
 
+        // 牛顿法求方程的近似解，根据收敛速度来计算颜色
         private static Complex F(Complex z, Complex c)
         {
             return z - (Complex.Pow(z, Power) + c) / (Power * Complex.Pow(z, Power - 1));
