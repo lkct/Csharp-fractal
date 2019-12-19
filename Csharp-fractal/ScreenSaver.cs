@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Csharp_fractal
 {
@@ -34,6 +35,7 @@ namespace Csharp_fractal
             };
             speedRate = 0.2;
             IsFirstRun = true;
+            imageIndex = 0;
         }
 
         // 可变参数
@@ -42,6 +44,7 @@ namespace Csharp_fractal
         private int mouseX; // 当前鼠标位置屏幕坐标X
         private int mouseY; // 当前鼠标位置屏幕坐标Y
         private bool IsFirstRun; // 是否第一次绘图，因为第一次绘图效果不太好，所以用这个把它略过
+        private int imageIndex; // 图的编号
 
         // 固定参数
         private readonly ImgRegion region; // 图像绘制区域
@@ -71,7 +74,10 @@ namespace Csharp_fractal
             if (IsFirstRun)
                 IsFirstRun = false;
             else
+            {
                 pictureBox.Image = Julia.GetJulia(region, c, cmap); // 重新绘图
+                pictureBox.Image.Save("../../Images/image" + imageIndex++ + ".bmp"); // 保存图片
+            }
         }
 
         // 鼠标移动时更新鼠标位置
